@@ -2,55 +2,97 @@ using UnityEngine;
 
 public class AnimacionYControlCanvas : MonoBehaviour
 {
-    public Animator animador;                  // Referencia al Animator
-    public GameObject canvasPasosSiguientes;   // Referencia al Canvas de pasos siguientes
-    public GameObject canvasInspeccionar;      // Referencia al Canvas de inspección
+    public Animator animador;                   // Animator del objeto
+    public GameObject canvasBienvenida;         // Canvas de bienvenida
+    public GameObject canvasInspeccionar;       // Canvas con botón de inspeccionar
+    public GameObject canvasPasosSiguientes;    // Canvas con botones siguiente/anterior
 
-    private int indicePaso = 0;                // Índice del paso actual
-    private string[] animaciones = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" }; // Lista de animaciones, puedes ajustarlas según tus animaciones
+    public Transform objetoConsola;             // Objeto que se anima (si quieres reiniciar posición/rotación)
 
-    // Método para reproducir la animación dependiendo del paso actual
-    public void ReproducirAnimacion()
+    private int indicePaso = 0;                 // Paso actual
+    private Vector3 posicionInicial;
+    private Quaternion rotacionInicial;
+
+    private string[] animaciones = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11" };
+
+    void Start()
     {
-        if (indicePaso >= 0 && indicePaso < animaciones.Length)
+        // Guardar transformaciones originales
+        if (objetoConsola != null)
         {
-            animador.Play(animaciones[indicePaso], 0, 0f);  // Reproduce la animación correspondiente al paso
+            posicionInicial = objetoConsola.position;
+            rotacionInicial = objetoConsola.rotation;
         }
+
+        // Al iniciar, mostrar solo el canvas de bienvenida
+        canvasBienvenida.SetActive(true);
+        canvasInspeccionar.SetActive(false);
+        canvasPasosSiguientes.SetActive(false);
+
+        // Puedes desactivar bienvenida automáticamente después de unos segundos si deseas
+        Invoke(nameof(MostrarCanvasInspeccionar), 3f);
     }
 
-    // Método para ir al siguiente paso (Canvas y Animación)
-    public void SiguientePaso()
-    {
-        if (indicePaso < animaciones.Length - 1)  // Asegurarse de no exceder el límite
-        {
-            indicePaso++;  // Incrementar el paso
-            ReproducirAnimacion();  // Reproducir la animación para el paso siguiente
-            MostrarCanvasPasosSiguientes();  // Cambiar al siguiente Canvas
-        }
-    }
-
-    // Método para ir al paso anterior (Canvas y Animación)
-    public void PasoAnterior()
-    {
-        if (indicePaso > 0)  // Asegurarse de no retroceder más allá del primer paso
-        {
-            indicePaso--;  // Decrementar el paso
-            ReproducirAnimacion();  // Reproducir la animación para el paso anterior
-            MostrarCanvasPasosSiguientes();  // Volver al Canvas de pasos anteriores
-        }
-    }
-
-    // Método para ir al Canvas de inspección
     public void MostrarCanvasInspeccionar()
     {
-        canvasPasosSiguientes.SetActive(false);  // Desactivar el Canvas de pasos siguientes
-        canvasInspeccionar.SetActive(true);       // Activar el Canvas de inspección
+        canvasBienvenida.SetActive(false);
+        canvasInspeccionar.SetActive(true);
+        canvasPasosSiguientes.SetActive(false);
     }
 
-    // Método para ir al Canvas de pasos siguientes
     public void MostrarCanvasPasosSiguientes()
     {
-        canvasInspeccionar.SetActive(false);      // Desactivar el Canvas de inspección
-        canvasPasosSiguientes.SetActive(true);   // Activar el Canvas de pasos siguientes
+        canvasBienvenida.SetActive(false);
+        canvasInspeccionar.SetActive(false);
+        canvasPasosSiguientes.SetActive(true);
+    }
+
+    public void SiguientePaso()
+    {
+        if (indicePaso < animaciones.Length - 1)
+        {
+            indicePaso++;
+            ReproducirAnimacion();
+            MostrarCanvasPasosSiguientes();
+        }
+    }
+
+    public void PasoAnterior()
+    {
+        if (indicePaso > 1)
+        {
+            indicePaso--;
+            ReproducirAnimacion();
+            MostrarCanvasPasosSiguientes();
+        }
+        else if (indicePaso == 1)
+        {
+            indicePaso = 0;
+            MostrarCanvasInspeccionar();
+
+            // Opcional: reproducir animación "Idle"
+            animador.Play("Idle", 0, 0f);
+
+            // Reiniciar posición/rotación del objeto si es necesario
+            if (objetoConsola != null)
+            {
+                objetoConsola.position = posicionInicial;
+                objetoConsola.rotation = rotacionInicial;
+            }
+        }
+    }
+
+    private void ReproducirAnimacion()
+    {
+        // Comprobamos si la animación es "1" para asegurarnos que no se salte
+        if (indicePaso == 0)
+        {
+            animador.Play("1", 0, 0f);  // Reproduce animación "1" sin importar el estado anterior
+        }
+        else if (indicePaso >= 0 && indicePaso < animaciones.Length)
+        {
+            // Para otras animaciones, se continúa con el flujo
+            animador.Play(animaciones[indicePaso], 0, 0f);
+        }
     }
 }
