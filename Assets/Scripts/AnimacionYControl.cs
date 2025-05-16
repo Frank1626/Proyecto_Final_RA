@@ -5,9 +5,10 @@ public class AnimacionYControlCanvas : MonoBehaviour
     public Animator animador;
 
     public GameObject canvasBienvenida;
-    public GameObject canvasInstrucciones;        // NUEVO
+    public GameObject canvasInstrucciones;
     public GameObject canvasInspeccionar;
     public GameObject canvasPasosSiguientes;
+    public GameObject canvasFinal; // NUEVO
 
     public Transform objetoConsola;
 
@@ -15,7 +16,7 @@ public class AnimacionYControlCanvas : MonoBehaviour
     private Vector3 posicionInicial;
     private Quaternion rotacionInicial;
 
-    private string[] animaciones = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11" };
+    private string[] animaciones = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19" };
 
     void Start()
     {
@@ -29,6 +30,7 @@ public class AnimacionYControlCanvas : MonoBehaviour
         canvasInstrucciones.SetActive(false);
         canvasInspeccionar.SetActive(false);
         canvasPasosSiguientes.SetActive(false);
+        canvasFinal.SetActive(false); // NUEVO
     }
 
     public void MostrarCanvasInstrucciones()
@@ -37,6 +39,7 @@ public class AnimacionYControlCanvas : MonoBehaviour
         canvasInstrucciones.SetActive(true);
         canvasInspeccionar.SetActive(false);
         canvasPasosSiguientes.SetActive(false);
+        canvasFinal.SetActive(false);
     }
 
     public void MostrarCanvasInspeccionar()
@@ -45,6 +48,7 @@ public class AnimacionYControlCanvas : MonoBehaviour
         canvasInstrucciones.SetActive(false);
         canvasInspeccionar.SetActive(true);
         canvasPasosSiguientes.SetActive(false);
+        canvasFinal.SetActive(false);
     }
 
     public void MostrarCanvasPasosSiguientes()
@@ -53,6 +57,17 @@ public class AnimacionYControlCanvas : MonoBehaviour
         canvasInstrucciones.SetActive(false);
         canvasInspeccionar.SetActive(false);
         canvasPasosSiguientes.SetActive(true);
+        canvasFinal.SetActive(false);
+    }
+
+    // NUEVO MÉTODO
+    public void MostrarCanvasFinal()
+    {
+        canvasBienvenida.SetActive(false);
+        canvasInstrucciones.SetActive(false);
+        canvasInspeccionar.SetActive(false);
+        canvasPasosSiguientes.SetActive(false);
+        canvasFinal.SetActive(true);
     }
 
     public void SiguientePaso()
@@ -62,6 +77,10 @@ public class AnimacionYControlCanvas : MonoBehaviour
             indicePaso++;
             ReproducirAnimacion();
             MostrarCanvasPasosSiguientes();
+        }
+        else
+        {
+            MostrarCanvasFinal(); // Cuando termina, muestra canvasFinal
         }
     }
 
@@ -97,6 +116,22 @@ public class AnimacionYControlCanvas : MonoBehaviour
         else if (indicePaso >= 0 && indicePaso < animaciones.Length)
         {
             animador.Play(animaciones[indicePaso], 0, 0f);
+        }
+    }
+
+    // MÉTODO DE REINICIO PARA BOTÓN
+    public void Reiniciar()
+    {
+        indicePaso = 0;
+
+        MostrarCanvasInspeccionar();
+
+        animador.Play("Idle", 0, 0f);
+
+        if (objetoConsola != null)
+        {
+            objetoConsola.position = posicionInicial;
+            objetoConsola.rotation = rotacionInicial;
         }
     }
 }
