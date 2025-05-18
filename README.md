@@ -1,2 +1,3 @@
 # Proyecto_Final_RA
-Proyecto Final de Realidad Aumentada
+Este repositorio alberga el contenido del proyecto final de la asignatura de Realidad Virtual y Aumnetada
+
